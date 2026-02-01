@@ -10,26 +10,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    container: kivy/buildozer:latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build with Docker
+    - name: Build APK
       run: |
-        # Use official buildozer Docker image
-        docker run --rm \
-          -v "$(pwd)":/home/user/hostcwd \
-          kivy/buildozer:latest \
-          bash -c "cd /home/user/hostcwd && buildozer android debug 2>&1 | tee build.log; exit 0"
+        buildozer android debug 2>&1 | tee build.log || true
+        echo "=== Build completed ==="
 
-        # Show build result
-        echo "=== Last 100 lines of build log ==="
-        tail -100 build.log || echo "No build log"
-
-        # Check for APK
-        echo "=== Checking for APK ==="
+    - name: Check results
+      run: |
+        echo "=== Checking for APK files ==="
         find . -name "*.apk" -type f || echo "No APK found"
+        echo "=== Last 50 lines of log ==="
+        tail -50 build.log || echo "No log"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4

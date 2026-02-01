@@ -4,6 +4,7 @@
 """
 import os
 import sys
+from kivy.utils import platform
 
 from kivy.app import App
 from kivy.core.text import LabelBase
@@ -25,17 +26,16 @@ from views.stats_view import StatsView
 from views.category_view import CategoryView
 from reminder import ReminderService
 
-# 设置窗口大小
-Window.size = (400, 700)
-Window.minimum_width = 350
-Window.minimum_height = 500
+# 仅在桌面平台设置窗口大小
+if platform not in ('android', 'ios'):
+    Window.size = (400, 700)
+    Window.minimum_width = 350
+    Window.minimum_height = 500
 
-# 注册支持 Emoji 的字体
-# Segoe UI Emoji 支持 emoji，SDL2 会自动回退到系统字体显示中文
-EMOJI_FONT = 'C:/Windows/Fonts/seguiemj.ttf'  # Segoe UI Emoji
-
-if os.path.exists(EMOJI_FONT):
-    LabelBase.register(name='Roboto', fn_regular=EMOJI_FONT)
+    # 注册支持 Emoji 的字体（仅 Windows）
+    EMOJI_FONT = 'C:/Windows/Fonts/seguiemj.ttf'
+    if os.path.exists(EMOJI_FONT):
+        LabelBase.register(name='Roboto', fn_regular=EMOJI_FONT)
 
 # 加载 KV 文件
 Builder.load_file('schedule.kv')
@@ -60,9 +60,13 @@ class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
+        self.size_hint = (1, 1)
 
         # 创建 ScreenManager
-        self.screen_manager = ScreenManager(transition=SlideTransition(duration=0.2))
+        self.screen_manager = ScreenManager(
+            transition=SlideTransition(duration=0.2),
+            size_hint=(1, 1)
+        )
 
         # 添加各个视图
         self.screen_manager.add_widget(CalendarView(name='calendar'))

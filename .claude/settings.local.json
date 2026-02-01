@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(wsl --status:*)",
+      "Bash(wsl -e bash -c \"sudo apt update && sudo apt install -y python3-pip git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev lld\")",
+      "Bash(wsl -e bash -c:*)",
+      "Bash(more:*)",
+      "Bash(ping:*)",
+      "Bash(wsl tail:*)",
+      "Bash(wsl bash:*)",
+      "Bash(timeout 60 sleep:*)",
+      "Bash(timeout 90 sleep:*)",
+      "Bash(C:WindowsSystem32wsl.exe bash /mnt/e/MyProject/myC/build_apk.sh)",
+      "Bash(cmd.exe /c \"wsl bash /mnt/e/MyProject/myC/build_apk.sh\")",
+      "Bash(cmd //c \"wsl bash /mnt/e/MyProject/myC/build_apk.sh\")",
+      "Bash(timeout 120 sleep:*)",
+      "Bash(timeout 180 sleep:*)",
+      "Bash(wsl cat:*)",
+      "Bash(wsl ps:*)",
+      "Bash(timeout 300 sleep:*)",
+      "Bash(git init:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(gh run list:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

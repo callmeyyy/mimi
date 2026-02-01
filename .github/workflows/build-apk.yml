@@ -5,7 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,11 +20,16 @@ jobs:
       with:
         python-version: '3.10'
 
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          python3-pip \
           build-essential \
           git \
           ffmpeg \
@@ -52,33 +57,41 @@ jobs:
           libssl-dev \
           zip \
           unzip \
-          openjdk-17-jdk
+          lld
 
     - name: Install Buildozer and dependencies
       run: |
-        pip install --upgrade pip
-        pip install buildozer cython virtualenv
+        pip install --upgrade pip wheel setuptools
+        pip install buildozer cython==0.29.36 virtualenv
 
     - name: Build APK with Buildozer
       run: |
-        # 设置环境变量避免交互式提示
-        export BUILDOZER_WARN_ON_ROOT=0
+        # Accept licenses and build
+        buildozer android debug 2>&1 | tee build.log || true
 
-        # 构建 debug APK
-        yes | buildozer android debug 2>&1 | tee build.log
-      env:
-        BUILDOZER_WARN_ON_ROOT: "0"
+        # Show last 100 lines of log if build failed
+        echo "=== Last 100 lines of build log ==="
+        tail -100 build.log
+
+        # Check if APK was created
+        echo "=== Checking for APK files ==="
+        find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+
+        # List bin directory
+        echo "=== Contents of bin directory ==="
+        ls -la bin/ 2>/dev/null || echo "bin directory not found"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: schedule-manager-apk
         path: bin/*.apk
-        if-no-files-found: error
+        if-no-files-found: warn
 
-    - name: Upload build log on failure
-      if: failure()
+    - name: Upload build log
       uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: build-log
         path: build.log

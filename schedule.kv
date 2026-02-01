@@ -1,0 +1,600 @@
+# Schedule Manager - Kivy Layout File
+# Modern Theme Design
+
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+
+# ========== Theme Colors ==========
+# Primary: #4A90D9 (Blue)
+# Success: #50C878 (Green)
+# Warning: #FFB347 (Orange)
+# Danger: #E74C3C (Red)
+# Background: #F5F7FA (Light Gray Blue)
+# Card: #FFFFFF (White)
+# Text: #333333 (Dark Gray)
+# Secondary Text: #666666 (Gray)
+
+# ========== Global Styles ==========
+
+<NavButton>:
+    size_hint_x: 1
+    background_color: 0, 0, 0, 0
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#E8F0FE') if self.state == 'down' else (1, 1, 1, 0)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [8]
+
+# ========== Card Style ==========
+
+<CardBox@BoxLayout>:
+    orientation: 'vertical'
+    padding: 15
+    spacing: 10
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [12]
+        Color:
+            rgba: get_color_from_hex('#E8E8E8')
+        Line:
+            rounded_rectangle: self.x, self.y, self.width, self.height, 12
+            width: 1.2
+
+# ========== Calendar View ==========
+
+<CalendarView>:
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#F5F7FA')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 12
+        spacing: 12
+
+        # Header Card
+        BoxLayout:
+            size_hint_y: None
+            height: 55
+            spacing: 10
+            padding: [10, 8]
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            Button:
+                text: '<'
+                size_hint_x: None
+                width: 45
+                font_size: '18sp'
+                background_color: get_color_from_hex('#4A90D9')
+                background_normal: ''
+                on_release: root.prev_month()
+
+            Label:
+                id: month_label
+                text: root.current_month_str
+                font_size: '18sp'
+                color: get_color_from_hex('#333333')
+                bold: True
+
+            Button:
+                text: '>'
+                size_hint_x: None
+                width: 45
+                font_size: '18sp'
+                background_color: get_color_from_hex('#4A90D9')
+                background_normal: ''
+                on_release: root.next_month()
+
+        # Calendar Card
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.55
+            padding: 10
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            # Week Header
+            GridLayout:
+                cols: 7
+                size_hint_y: None
+                height: 35
+                spacing: 2
+
+                Label:
+                    text: 'Sun'
+                    color: get_color_from_hex('#E74C3C')
+                    font_size: '12sp'
+                    bold: True
+                Label:
+                    text: 'Mon'
+                    color: get_color_from_hex('#666666')
+                    font_size: '12sp'
+                Label:
+                    text: 'Tue'
+                    color: get_color_from_hex('#666666')
+                    font_size: '12sp'
+                Label:
+                    text: 'Wed'
+                    color: get_color_from_hex('#666666')
+                    font_size: '12sp'
+                Label:
+                    text: 'Thu'
+                    color: get_color_from_hex('#666666')
+                    font_size: '12sp'
+                Label:
+                    text: 'Fri'
+                    color: get_color_from_hex('#666666')
+                    font_size: '12sp'
+                Label:
+                    text: 'Sat'
+                    color: get_color_from_hex('#4A90D9')
+                    font_size: '12sp'
+                    bold: True
+
+            # Calendar Grid
+            GridLayout:
+                id: calendar_grid
+                cols: 7
+                spacing: 3
+
+        # Day Schedule Area
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 12
+            spacing: 8
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            # Day Schedule Title
+            BoxLayout:
+                size_hint_y: None
+                height: 35
+
+                Label:
+                    id: day_title
+                    text: root.selected_date_str
+                    font_size: '15sp'
+                    color: get_color_from_hex('#333333')
+                    bold: True
+                    halign: 'left'
+                    text_size: self.size
+                    valign: 'middle'
+
+                Button:
+                    text: '+ Add'
+                    size_hint_x: None
+                    width: 70
+                    font_size: '12sp'
+                    background_color: get_color_from_hex('#50C878')
+                    background_normal: ''
+                    on_release: root.add_schedule()
+
+            # Day Schedule List
+            ScrollView:
+                BoxLayout:
+                    id: day_schedules
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 8
+
+# ========== Schedule View ==========
+
+<ScheduleView>:
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#F5F7FA')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 12
+        spacing: 12
+
+        # Search Card
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            spacing: 10
+            padding: [10, 5]
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            TextInput:
+                id: search_input
+                hint_text: 'Search...'
+                multiline: False
+                font_size: '14sp'
+                padding: [12, 12]
+                background_color: get_color_from_hex('#F5F7FA')
+                on_text: root.on_search(self.text)
+
+            Spinner:
+                id: category_filter
+                text: 'All'
+                size_hint_x: None
+                width: 80
+                font_size: '12sp'
+                on_text: root.on_filter_change()
+
+        # Status Filter
+        BoxLayout:
+            size_hint_y: None
+            height: 38
+            spacing: 8
+            padding: [5, 0]
+
+            ToggleButton:
+                id: filter_all
+                text: 'All'
+                group: 'status_filter'
+                state: 'down'
+                font_size: '12sp'
+                background_normal: ''
+                background_color: get_color_from_hex('#4A90D9') if self.state == 'down' else get_color_from_hex('#E0E0E0')
+                on_release: root.on_status_filter('all')
+
+            ToggleButton:
+                id: filter_pending
+                text: 'Pending'
+                group: 'status_filter'
+                font_size: '12sp'
+                background_normal: ''
+                background_color: get_color_from_hex('#4A90D9') if self.state == 'down' else get_color_from_hex('#E0E0E0')
+                on_release: root.on_status_filter('pending')
+
+            ToggleButton:
+                id: filter_progress
+                text: 'In Progress'
+                group: 'status_filter'
+                font_size: '11sp'
+                background_normal: ''
+                background_color: get_color_from_hex('#4A90D9') if self.state == 'down' else get_color_from_hex('#E0E0E0')
+                on_release: root.on_status_filter('in_progress')
+
+            ToggleButton:
+                id: filter_completed
+                text: 'Done'
+                group: 'status_filter'
+                font_size: '12sp'
+                background_normal: ''
+                background_color: get_color_from_hex('#4A90D9') if self.state == 'down' else get_color_from_hex('#E0E0E0')
+                on_release: root.on_status_filter('completed')
+
+        # Schedule List
+        ScrollView:
+            BoxLayout:
+                id: schedule_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 10
+
+        # Add Button
+        Button:
+            text: '+ New Schedule'
+            size_hint_y: None
+            height: 52
+            font_size: '16sp'
+            bold: True
+            background_color: get_color_from_hex('#4A90D9')
+            background_normal: ''
+            on_release: root.add_schedule()
+
+# ========== Plan View ==========
+
+<PlanView>:
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#F5F7FA')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 12
+        spacing: 12
+
+        # Title Card
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            padding: [15, 10]
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            Label:
+                text: 'My Plans'
+                font_size: '18sp'
+                color: get_color_from_hex('#333333')
+                bold: True
+                halign: 'left'
+                text_size: self.size
+                valign: 'middle'
+
+        # Plan List
+        ScrollView:
+            BoxLayout:
+                id: plan_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 12
+
+        # Add Button
+        Button:
+            text: '+ New Plan'
+            size_hint_y: None
+            height: 52
+            font_size: '16sp'
+            bold: True
+            background_color: get_color_from_hex('#4A90D9')
+            background_normal: ''
+            on_release: root.add_plan()
+
+# ========== Stats View ==========
+
+<StatsView>:
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#F5F7FA')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 12
+        spacing: 15
+
+        # Title
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            padding: [15, 10]
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            Label:
+                text: 'Statistics'
+                font_size: '18sp'
+                color: get_color_from_hex('#333333')
+                bold: True
+                halign: 'left'
+                text_size: self.size
+                valign: 'middle'
+
+        # Completion Rate Card
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: 150
+            padding: 15
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            Label:
+                text: 'Completion Rate'
+                font_size: '14sp'
+                color: get_color_from_hex('#666666')
+                size_hint_y: None
+                height: 25
+
+            Widget:
+                id: completion_chart
+                size_hint_y: 1
+
+            Label:
+                id: completion_label
+                text: '0%'
+                font_size: '28sp'
+                bold: True
+                color: get_color_from_hex('#4A90D9')
+                size_hint_y: None
+                height: 40
+
+        # Category Distribution
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: 180
+            padding: 15
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            Label:
+                text: 'By Category'
+                font_size: '14sp'
+                color: get_color_from_hex('#666666')
+                size_hint_y: None
+                height: 25
+
+            Widget:
+                id: category_chart
+                size_hint_y: 1
+
+        # Daily Trend
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 15
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            Label:
+                text: 'Last 7 Days'
+                font_size: '14sp'
+                color: get_color_from_hex('#666666')
+                size_hint_y: None
+                height: 25
+
+            Widget:
+                id: trend_chart
+                size_hint_y: 1
+
+# ========== Category View ==========
+
+<CategoryView>:
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#F5F7FA')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 12
+        spacing: 12
+
+        # Title
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            padding: [15, 10]
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [12]
+
+            Label:
+                text: 'Categories'
+                font_size: '18sp'
+                color: get_color_from_hex('#333333')
+                bold: True
+                halign: 'left'
+                text_size: self.size
+                valign: 'middle'
+
+        # Category List
+        ScrollView:
+            BoxLayout:
+                id: category_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 10
+
+        # Add Button
+        Button:
+            text: '+ New Category'
+            size_hint_y: None
+            height: 52
+            font_size: '16sp'
+            bold: True
+            background_color: get_color_from_hex('#4A90D9')
+            background_normal: ''
+            on_release: root.add_category()
+
+# ========== Schedule Card ==========
+
+<ScheduleCard@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: 100
+    padding: 12
+    spacing: 5
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10]
+        Color:
+            rgba: self.category_color if hasattr(self, 'category_color') else (0.3, 0.3, 0.3, 1)
+        RoundedRectangle:
+            pos: self.x, self.y
+            size: 5, self.height
+            radius: [10, 0, 0, 10]
+
+# ========== Plan Card ==========
+
+<PlanCard@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: 120
+    padding: 15
+    spacing: 10
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [12]
+
+# ========== Category Item ==========
+
+<CategoryItem@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: 55
+    padding: [12, 8]
+    spacing: 12
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10]

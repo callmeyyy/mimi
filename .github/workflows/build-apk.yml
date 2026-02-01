@@ -49,6 +49,7 @@ jobs:
           xclip \
           xsel \
           libtool \
+          libtool-bin \
           pkg-config \
           autoconf \
           automake \
@@ -57,7 +58,8 @@ jobs:
           libssl-dev \
           zip \
           unzip \
-          lld
+          lld \
+          ccache
 
     - name: Install Buildozer and dependencies
       run: |

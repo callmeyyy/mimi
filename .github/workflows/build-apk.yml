@@ -15,84 +15,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-
-    - name: Install system dependencies
+    - name: Build with Docker
       run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          git \
-          ffmpeg \
-          libsdl2-dev \
-          libsdl2-image-dev \
-          libsdl2-mixer-dev \
-          libsdl2-ttf-dev \
-          libportmidi-dev \
-          libswscale-dev \
-          libavformat-dev \
-          libavcodec-dev \
-          zlib1g-dev \
-          libgstreamer1.0-dev \
-          gstreamer1.0-plugins-base \
-          gstreamer1.0-plugins-good \
-          libmtdev-dev \
-          xclip \
-          xsel \
-          libtool \
-          libtool-bin \
-          pkg-config \
-          autoconf \
-          automake \
-          cmake \
-          libffi-dev \
-          libssl-dev \
-          zip \
-          unzip \
-          lld \
-          ccache
+        # Use official buildozer Docker image
+        docker run --rm \
+          -v "$(pwd)":/home/user/hostcwd \
+          kivy/buildozer:latest \
+          bash -c "cd /home/user/hostcwd && buildozer android debug 2>&1 | tee build.log; exit 0"
 
-    - name: Install Buildozer and dependencies
-      run: |
-        pip install --upgrade pip wheel setuptools
-        pip install buildozer cython==0.29.36 virtualenv
-
-    - name: Build APK with Buildozer
-      run: |
-        set -x
-        echo "Starting build at $(date)" > build.log
-        echo "Python version: $(python --version)" >> build.log
-        echo "Working directory: $(pwd)" >> build.log
-        echo "Files in directory:" >> build.log
-        ls -la >> build.log
-        echo "=== Starting Buildozer ===" >> build.log
-
-        # Run buildozer and capture all output
-        buildozer android debug 2>&1 | tee -a build.log
-        BUILD_STATUS=${PIPESTATUS[0]}
-
-        echo "=== Build finished with status: $BUILD_STATUS ===" >> build.log
-
-        # Check if APK was created
-        echo "=== Checking for APK files ===" >> build.log
-        find . -name "*.apk" -type f 2>/dev/null >> build.log || echo "No APK files found" >> build.log
-
-        # List bin directory
-        echo "=== Contents of bin directory ===" >> build.log
-        ls -la bin/ 2>/dev/null >> build.log || echo "bin directory not found" >> build.log
-
-        # Show last 100 lines
+        # Show build result
         echo "=== Last 100 lines of build log ==="
-        tail -100 build.log
+        tail -100 build.log || echo "No build log"
+
+        # Check for APK
+        echo "=== Checking for APK ==="
+        find . -name "*.apk" -type f || echo "No APK found"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
